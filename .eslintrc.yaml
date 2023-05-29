@@ -1,0 +1,8 @@
+root: true
+extends:
+  - remcohaszing
+rules:
+  func-style: off
+  no-param-reassign: off
+
+  import/no-extraneous-dependencies: off

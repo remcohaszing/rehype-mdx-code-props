@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "node16",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2018"
+  }
+}

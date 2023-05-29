@@ -1,0 +1,54 @@
+{
+  "name": "rehype-mdx-code-props",
+  "version": "2.0.0",
+  "description": "A rehype MDX plugin for interpreting markdown code meta as props",
+  "author": "Remco Haszing <remcohaszing@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "exports": "./index.js",
+  "repository": "remcohaszing/rehype-mdx-code-props",
+  "bugs": "https://github.com/remcohaszing/rehype-mdx-code-props/issues",
+  "homepage": "https://github.com/remcohaszing/rehype-mdx-code-props#readme",
+  "funding": "https://github.com/sponsors/remcohaszing",
+  "keywords": [
+    "hast",
+    "html",
+    "markdown",
+    "mdx",
+    "rehype",
+    "rehype-plugin",
+    "unified"
+  ],
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "prepack": "tsc --noEmit false",
+    "start": "tsx watch test.ts",
+    "test": "c8 tsx test.ts"
+  },
+  "dependencies": {
+    "@types/hast": "^2.0.0",
+    "acorn": "^8.0.0",
+    "acorn-jsx": "^5.0.0",
+    "hast-util-to-estree": "^2.0.0",
+    "unified": "^10.0.0",
+    "unist-util-visit-parents": "^5.0.0"
+  },
+  "devDependencies": {
+    "@mdx-js/mdx": "^2.0.0",
+    "@types/estree": "^1.0.0",
+    "@types/node": "^20.0.0",
+    "@types/prettier": "^2.0.0",
+    "c8": "^7.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-remcohaszing": "^9.0.0",
+    "prettier": "^2.0.0",
+    "remark-cli": "11.0.0",
+    "remark-preset-remcohaszing": "^1.0.0",
+    "to-vfile": "^7.0.0",
+    "tsx": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}

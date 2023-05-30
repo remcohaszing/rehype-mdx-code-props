@@ -1,6 +1,6 @@
 {
   "name": "rehype-mdx-code-props",
-  "version": "2.0.0",
+  "version": "0.0.0",
   "description": "A rehype MDX plugin for interpreting markdown code meta as props",
   "author": "Remco Haszing <remcohaszing@gmail.com>",
   "license": "MIT",

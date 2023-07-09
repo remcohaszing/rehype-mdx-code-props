@@ -42,7 +42,7 @@ The following script:
 import { readFile } from 'node:fs/promises'
 
 import { compile } from '@mdx-js/mdx'
-import { rehypeMdxCodeProps } from 'rehype-mdx-code-props'
+import rehypeMdxCodeProps from 'rehype-mdx-code-props'
 
 const { value } = await compile(await readFile('example.mdx'), {
   jsx: true,

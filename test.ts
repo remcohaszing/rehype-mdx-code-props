@@ -24,7 +24,7 @@ for (const name of await readdir(fixturesDir)) {
       jsx: true,
       rehypePlugins: [[rehypeMdxCodeProps, { tagName }]]
     })
-    const formatted = prettier.format(String(result), { ...prettierConfig, filepath })
+    const formatted = await prettier.format(String(result), { ...prettierConfig, filepath })
     if (process.argv.includes('update')) {
       await writeFile(expected, formatted)
     }
@@ -63,16 +63,16 @@ test('meta empty string', async () => {
     value,
     '/*@jsxRuntime automatic @jsxImportSource react*/\n' +
       'function _createMdxContent(props) {\n' +
-      '  const _components = Object.assign({\n' +
-      '    code: "code"\n' +
-      '  }, props.components);\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
       '  return <_components.code />;\n' +
       '}\n' +
-      'function MDXContent(props = {}) {\n' +
+      'export default function MDXContent(props = {}) {\n' +
       '  const {wrapper: MDXLayout} = props.components || ({});\n' +
       '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
-      '}\n' +
-      'export default MDXContent;\n'
+      '}\n'
   )
 })
 
@@ -96,16 +96,16 @@ test('code without parent', async () => {
     value,
     '/*@jsxRuntime automatic @jsxImportSource react*/\n' +
       'function _createMdxContent(props) {\n' +
-      '  const _components = Object.assign({\n' +
-      '    code: "code"\n' +
-      '  }, props.components);\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
       '  return <_components.code />;\n' +
       '}\n' +
-      'function MDXContent(props = {}) {\n' +
+      'export default function MDXContent(props = {}) {\n' +
       '  const {wrapper: MDXLayout} = props.components || ({});\n' +
       '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
-      '}\n' +
-      'export default MDXContent;\n'
+      '}\n'
   )
 })
 
@@ -117,10 +117,12 @@ test('code with non-pre parent', async () => {
         ast.children.push({
           type: 'element',
           tagName: 'div',
+          properties: {},
           children: [
             {
               type: 'element',
               tagName: 'code',
+              properties: {},
               data: { meta: 'meta' },
               children: []
             }
@@ -135,17 +137,17 @@ test('code with non-pre parent', async () => {
     value,
     '/*@jsxRuntime automatic @jsxImportSource react*/\n' +
       'function _createMdxContent(props) {\n' +
-      '  const _components = Object.assign({\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
       '    div: "div",\n' +
-      '    code: "code"\n' +
-      '  }, props.components);\n' +
+      '    ...props.components\n' +
+      '  };\n' +
       '  return <_components.div><_components.code /></_components.div>;\n' +
       '}\n' +
-      'function MDXContent(props = {}) {\n' +
+      'export default function MDXContent(props = {}) {\n' +
       '  const {wrapper: MDXLayout} = props.components || ({});\n' +
       '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
-      '}\n' +
-      'export default MDXContent;\n'
+      '}\n'
   )
 })
 
@@ -157,16 +159,19 @@ test('code with pre parent and siblings', async () => {
         ast.children.push({
           type: 'element',
           tagName: 'pre',
+          properties: {},
           children: [
             {
               type: 'element',
               tagName: 'code',
+              properties: {},
               data: { meta: 'meta' },
               children: []
             },
             {
               type: 'element',
               tagName: 'code',
+              properties: {},
               children: []
             }
           ]
@@ -180,16 +185,16 @@ test('code with pre parent and siblings', async () => {
     value,
     '/*@jsxRuntime automatic @jsxImportSource react*/\n' +
       'function _createMdxContent(props) {\n' +
-      '  const _components = Object.assign({\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
       '    pre: "pre",\n' +
-      '    code: "code"\n' +
-      '  }, props.components);\n' +
+      '    ...props.components\n' +
+      '  };\n' +
       '  return <_components.pre><_components.code /><_components.code /></_components.pre>;\n' +
       '}\n' +
-      'function MDXContent(props = {}) {\n' +
+      'export default function MDXContent(props = {}) {\n' +
       '  const {wrapper: MDXLayout} = props.components || ({});\n' +
       '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
-      '}\n' +
-      'export default MDXContent;\n'
+      '}\n'
   )
 })

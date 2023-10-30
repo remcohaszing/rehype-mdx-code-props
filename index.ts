@@ -1,7 +1,6 @@
 import { Parser } from 'acorn'
 import jsx from 'acorn-jsx'
 import {
-  type BaseNode,
   type ExpressionStatement,
   type JSXAttribute,
   type JSXElement,
@@ -12,6 +11,18 @@ import { type Root } from 'hast'
 import { toEstree } from 'hast-util-to-estree'
 import { type Plugin } from 'unified'
 import { visitParents } from 'unist-util-visit-parents'
+
+/**
+ * @internal
+ */
+declare module 'hast' {
+  interface ElementData {
+    /**
+     * Code meta defined by the mdast.
+     */
+    meta?: string
+  }
+}
 
 type JSXAttributes = (JSXAttribute | JSXSpreadAttribute)[]
 
@@ -38,7 +49,7 @@ function getOpeningAttributes(program: Program): JSXAttributes {
 function parseMeta(meta: string): JSXAttributes {
   const program = parser.parse(`<c ${meta} />`, {
     ecmaVersion: 'latest'
-  }) as BaseNode as Program
+  }) as Program
   return getOpeningAttributes(program)
 }
 

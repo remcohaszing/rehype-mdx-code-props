@@ -31,8 +31,10 @@ const parser = Parser.extend(jsx())
 /**
  * Get the JSX attributes for an estree program containing just a single JSX element.
  *
- * @param program The estree program
- * @returns The JSX attributes of the JSX element.
+ * @param program
+ *   The estree program
+ * @returns
+ *   The JSX attributes of the JSX element.
  */
 function getOpeningAttributes(program: Program): JSXAttributes {
   const { expression } = program.body[0] as ExpressionStatement
@@ -43,8 +45,10 @@ function getOpeningAttributes(program: Program): JSXAttributes {
 /**
  * Convert code meta to JSX elements.
  *
- * @param meta The meta to conert
- * @returns A list of MDX JSX attributes.
+ * @param meta
+ *   The meta to conert
+ * @returns
+ *   A list of MDX JSX attributes.
  */
 function parseMeta(meta: string): JSXAttributes {
   const program = parser.parse(`<c ${meta} />`, {

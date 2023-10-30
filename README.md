@@ -84,7 +84,7 @@ An MDX rehype plugin for transforming markdown code meta into JSX props.
 
 ## Compatibility
 
-This plugin works with Node.js 16 or greater and MDX 2.
+This plugin works with Node.js 16 or greater and MDX 3.
 
 ## License
 

@@ -6,11 +6,10 @@ import { fileURLToPath } from 'node:url'
 import { compile } from '@mdx-js/mdx'
 import { type Root } from 'hast'
 import prettier from 'prettier'
+import rehypeMdxCodeProps from 'rehype-mdx-code-props'
 import { read } from 'to-vfile'
 
-import rehypeMdxCodeProps from './index.js'
-
-const fixturesDir = new URL('fixtures/', import.meta.url)
+const fixturesDir = new URL('../fixtures/', import.meta.url)
 
 for (const name of await readdir(fixturesDir)) {
   const testFixture = async (tagName: 'code' | 'pre'): Promise<void> => {

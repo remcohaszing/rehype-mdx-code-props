@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "declarationMap": true,
     "module": "node16",
-    "noEmit": true,
+    "outDir": "dist",
+    "rootDir": "src",
     "skipLibCheck": true,
+    "sourceMap": true,
     "strict": true,
     "stripInternal": true,
     "target": "es2018"

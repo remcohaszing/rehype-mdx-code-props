@@ -75,8 +75,7 @@ const rehypeMdxCodeProps: Plugin<[RehypeMdxCodePropsOptions?], Root> = ({
         parent = ancestors.at(-2)!
       }
 
-      const line = child.position?.start.line || 1
-      const replacement = fromMarkdown(`${'\n'.repeat(line - 1)}<${child.tagName} ${meta} />`, {
+      const replacement = fromMarkdown(`<${child.tagName} ${meta} />`, {
         extensions: [mdxjs()],
         mdastExtensions: [mdxFromMarkdown()]
       }).children[0] as MdxJsxFlowElementHast

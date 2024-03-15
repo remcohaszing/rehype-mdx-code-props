@@ -8,6 +8,7 @@ import { type Root } from 'hast'
 import prettier from 'prettier'
 import rehypeMdxCodeProps from 'rehype-mdx-code-props'
 import { read } from 'to-vfile'
+import { visitParents } from 'unist-util-visit-parents'
 
 const fixturesDir = new URL('../fixtures/', import.meta.url)
 
@@ -194,6 +195,166 @@ test('code with pre parent and siblings', async () => {
       '    ...props.components\n' +
       '  };\n' +
       '  return <_components.pre><_components.code /><_components.code /></_components.pre>;\n' +
+      '}\n' +
+      'export default function MDXContent(props = {}) {\n' +
+      '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+      '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
+      '}\n'
+  )
+})
+
+test('boolean properties true', async () => {
+  const { value } = await compile('```js prop={prop}\n```\n', {
+    jsx: true,
+    rehypePlugins: [
+      () => (ast: Root) => {
+        visitParents(ast, { type: 'element', tagName: 'pre' }, (element) => {
+          element.properties.hidden = true
+        })
+      },
+      rehypeMdxCodeProps
+    ]
+  })
+
+  assert.equal(
+    value,
+    '/*@jsxRuntime automatic*/\n' +
+      '/*@jsxImportSource react*/\n' +
+      'function _createMdxContent(props) {\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    pre: "pre",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
+      '  return <_components.pre hidden prop={prop}><_components.code className="language-js" /></_components.pre>;\n' +
+      '}\n' +
+      'export default function MDXContent(props = {}) {\n' +
+      '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+      '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
+      '}\n'
+  )
+})
+
+test('boolean properties false', async () => {
+  const { value } = await compile('```js prop={prop}\n```\n', {
+    jsx: true,
+    rehypePlugins: [
+      () => (ast: Root) => {
+        visitParents(ast, { type: 'element', tagName: 'pre' }, (element) => {
+          element.properties.hidden = false
+        })
+      },
+      rehypeMdxCodeProps
+    ]
+  })
+
+  assert.equal(
+    value,
+    '/*@jsxRuntime automatic*/\n' +
+      '/*@jsxImportSource react*/\n' +
+      'function _createMdxContent(props) {\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    pre: "pre",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
+      '  return <_components.pre prop={prop}><_components.code className="language-js" /></_components.pre>;\n' +
+      '}\n' +
+      'export default function MDXContent(props = {}) {\n' +
+      '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+      '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
+      '}\n'
+  )
+})
+
+test('boolean properties empty', async () => {
+  const { value } = await compile('```js prop={prop}\n```\n', {
+    jsx: true,
+    rehypePlugins: [
+      () => (ast: Root) => {
+        visitParents(ast, { type: 'element', tagName: 'pre' }, (element) => {
+          element.properties.hidden = ''
+        })
+      },
+      rehypeMdxCodeProps
+    ]
+  })
+
+  assert.equal(
+    value,
+    '/*@jsxRuntime automatic*/\n' +
+      '/*@jsxImportSource react*/\n' +
+      'function _createMdxContent(props) {\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    pre: "pre",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
+      '  return <_components.pre prop={prop}><_components.code className="language-js" /></_components.pre>;\n' +
+      '}\n' +
+      'export default function MDXContent(props = {}) {\n' +
+      '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+      '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
+      '}\n'
+  )
+})
+
+test('numeric properties', async () => {
+  const { value } = await compile('```js prop={prop}\n```\n', {
+    jsx: true,
+    rehypePlugins: [
+      () => (ast: Root) => {
+        visitParents(ast, { type: 'element', tagName: 'pre' }, (element) => {
+          element.properties.height = 42
+        })
+      },
+      rehypeMdxCodeProps
+    ]
+  })
+
+  assert.equal(
+    value,
+    '/*@jsxRuntime automatic*/\n' +
+      '/*@jsxImportSource react*/\n' +
+      'function _createMdxContent(props) {\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    pre: "pre",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
+      '  return <_components.pre height="42" prop={prop}><_components.code className="language-js" /></_components.pre>;\n' +
+      '}\n' +
+      'export default function MDXContent(props = {}) {\n' +
+      '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+      '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
+      '}\n'
+  )
+})
+
+test('comma separated properties', async () => {
+  const { value } = await compile('```js prop={prop}\n```\n', {
+    jsx: true,
+    rehypePlugins: [
+      () => (ast: Root) => {
+        visitParents(ast, { type: 'element', tagName: 'pre' }, (element) => {
+          element.properties.accept = ['a', 'b']
+        })
+      },
+      rehypeMdxCodeProps
+    ]
+  })
+
+  assert.equal(
+    value,
+    '/*@jsxRuntime automatic*/\n' +
+      '/*@jsxImportSource react*/\n' +
+      'function _createMdxContent(props) {\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    pre: "pre",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
+      '  return <_components.pre accept="a, b" prop={prop}><_components.code className="language-js" /></_components.pre>;\n' +
       '}\n' +
       'export default function MDXContent(props = {}) {\n' +
       '  const {wrapper: MDXLayout} = props.components || ({});\n' +

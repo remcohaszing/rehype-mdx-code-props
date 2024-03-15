@@ -1,11 +1,12 @@
 import { stringify as commas } from 'comma-separated-tokens'
 import { type Root } from 'hast'
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { mdxFromMarkdown } from 'mdast-util-mdx'
 import { type MdxJsxFlowElementHast } from 'mdast-util-mdx-jsx'
+import { mdxjs } from 'micromark-extension-mdxjs'
 import { find, hastToReact, html } from 'property-information'
-import remarkMdx from 'remark-mdx'
-import remarkParse from 'remark-parse'
 import { stringify as spaces } from 'space-separated-tokens'
-import { type Plugin, unified } from 'unified'
+import { type Plugin } from 'unified'
 import { visitParents } from 'unist-util-visit-parents'
 
 /**
@@ -19,8 +20,6 @@ declare module 'hast' {
     meta?: string
   }
 }
-
-const parser = unified().use(remarkParse).use(remarkMdx)
 
 export interface RehypeMdxCodePropsOptions {
   /**
@@ -77,8 +76,10 @@ const rehypeMdxCodeProps: Plugin<[RehypeMdxCodePropsOptions?], Root> = ({
       }
 
       const line = child.position?.start.line || 1
-      const replacement = parser.parse(`${'\n'.repeat(line - 1)}<${child.tagName} ${meta} />`)
-        .children[0] as MdxJsxFlowElementHast
+      const replacement = fromMarkdown(`${'\n'.repeat(line - 1)}<${child.tagName} ${meta} />`, {
+        extensions: [mdxjs()],
+        mdastExtensions: [mdxFromMarkdown()]
+      }).children[0] as MdxJsxFlowElementHast
       replacement.children = child.children
       replacement.data = child.data
       replacement.position = child.position

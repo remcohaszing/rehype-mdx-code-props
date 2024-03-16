@@ -33,11 +33,13 @@
   "dependencies": {
     "@types/hast": "^3.0.0",
     "comma-separated-tokens": "^2.0.0",
+    "estree-util-value-to-estree": "^3.0.0",
     "mdast-util-from-markdown": "^2.0.0",
     "mdast-util-mdx": "^3.0.0",
     "micromark-extension-mdxjs": "^3.0.0",
     "property-information": "^6.0.0",
     "space-separated-tokens": "^2.0.0",
+    "style-to-js": "^1.0.0",
     "unified": "^11.0.0",
     "unist-util-visit-parents": "^6.0.0"
   },

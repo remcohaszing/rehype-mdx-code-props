@@ -1,4 +1,5 @@
 import { stringify as commas } from 'comma-separated-tokens'
+import { valueToEstree } from 'estree-util-value-to-estree'
 import { type Root } from 'hast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { mdxFromMarkdown } from 'mdast-util-mdx'
@@ -6,6 +7,7 @@ import { type MdxJsxFlowElementHast } from 'mdast-util-mdx-jsx'
 import { mdxjs } from 'micromark-extension-mdxjs'
 import { find, hastToReact, html } from 'property-information'
 import { stringify as spaces } from 'space-separated-tokens'
+import styleToObject from 'style-to-js'
 import { type Plugin } from 'unified'
 import { visitParents } from 'unist-util-visit-parents'
 
@@ -100,11 +102,36 @@ const rehypeMdxCodeProps: Plugin<[RehypeMdxCodePropsOptions?], Root> = ({
           value = String(value)
         }
 
-        replacement.attributes.unshift({
-          type: 'mdxJsxAttribute',
-          name,
-          value: value === true ? null : value
-        })
+        if (value === true) {
+          replacement.attributes.unshift({
+            type: 'mdxJsxAttribute',
+            name,
+            value: null
+          })
+        } else if (name === 'style') {
+          replacement.attributes.unshift({
+            type: 'mdxJsxAttribute',
+            name,
+            value: {
+              type: 'mdxJsxAttributeValueExpression',
+              value,
+              data: {
+                estree: {
+                  type: 'Program',
+                  sourceType: 'module',
+                  body: [
+                    {
+                      type: 'ExpressionStatement',
+                      expression: valueToEstree(styleToObject.default(value))
+                    }
+                  ]
+                }
+              }
+            }
+          })
+        } else {
+          replacement.attributes.unshift({ type: 'mdxJsxAttribute', name, value })
+        }
       }
 
       parent.children[parent.children.indexOf(child)] = replacement

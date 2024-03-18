@@ -80,6 +80,8 @@ An MDX rehype plugin for transforming markdown code meta into JSX props.
 
 #### Options
 
+- `elementAttributeNameCase` (`'html' | 'react'`): The casing to use for attribute names. This
+  should match the `elementAttributeNameCase` value passed to MDX. (Default: `'react'`)
 - `tagName` (`'code' | 'pre'`): The tag name to add the attributes to. (Default: `'pre'`)
 
 ## Compatibility

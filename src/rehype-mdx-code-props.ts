@@ -25,6 +25,16 @@ declare module 'hast' {
 
 export interface RehypeMdxCodePropsOptions {
   /**
+   * The casing to use for attribute names.
+   *
+   * This should match the `elementAttributeNameCase` value passed to MDX.
+   *
+   * @default 'react'
+   * @see https://mdxjs.com/packages/mdx/#processoroptions
+   */
+  elementAttributeNameCase?: 'html' | 'react'
+
+  /**
    * The tag name to add the attributes to.
    *
    * @default 'pre'
@@ -36,6 +46,7 @@ export interface RehypeMdxCodePropsOptions {
  * An MDX rehype plugin for transforming markdown code meta into JSX props.
  */
 const rehypeMdxCodeProps: Plugin<[RehypeMdxCodePropsOptions?], Root> = ({
+  elementAttributeNameCase = 'react',
   tagName = 'pre'
 } = {}) => {
   if (tagName !== 'code' && tagName !== 'pre') {
@@ -94,7 +105,7 @@ const rehypeMdxCodeProps: Plugin<[RehypeMdxCodePropsOptions?], Root> = ({
           continue
         }
 
-        name = hastToReact[info.property] || info.property
+        name = (elementAttributeNameCase === 'react' && hastToReact[info.property]) || info.property
 
         if (Array.isArray(value)) {
           value = info.commaSeparated ? commas(value) : spaces(value)

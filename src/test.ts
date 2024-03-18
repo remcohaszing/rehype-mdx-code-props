@@ -396,3 +396,67 @@ test('comma separated properties', async () => {
       '}\n'
   )
 })
+
+test('elementAttributeNameCase react', async () => {
+  const { value } = await compile('```js prop={prop}\n```\n', {
+    jsx: true,
+    rehypePlugins: [
+      () => (ast: Root) => {
+        visitParents(ast, { type: 'element', tagName: 'pre' }, (element) => {
+          element.properties.itemId = 'a'
+        })
+      },
+      rehypeMdxCodeProps
+    ]
+  })
+
+  assert.equal(
+    value,
+    '/*@jsxRuntime automatic*/\n' +
+      '/*@jsxImportSource react*/\n' +
+      'function _createMdxContent(props) {\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    pre: "pre",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
+      '  return <_components.pre itemID="a" prop={prop}><_components.code className="language-js" /></_components.pre>;\n' +
+      '}\n' +
+      'export default function MDXContent(props = {}) {\n' +
+      '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+      '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
+      '}\n'
+  )
+})
+
+test('elementAttributeNameCase html', async () => {
+  const { value } = await compile('```js prop={prop}\n```\n', {
+    jsx: true,
+    rehypePlugins: [
+      () => (ast: Root) => {
+        visitParents(ast, { type: 'element', tagName: 'pre' }, (element) => {
+          element.properties.itemId = 'a'
+        })
+      },
+      [rehypeMdxCodeProps, { elementAttributeNameCase: 'html' }]
+    ]
+  })
+
+  assert.equal(
+    value,
+    '/*@jsxRuntime automatic*/\n' +
+      '/*@jsxImportSource react*/\n' +
+      'function _createMdxContent(props) {\n' +
+      '  const _components = {\n' +
+      '    code: "code",\n' +
+      '    pre: "pre",\n' +
+      '    ...props.components\n' +
+      '  };\n' +
+      '  return <_components.pre itemId="a" prop={prop}><_components.code className="language-js" /></_components.pre>;\n' +
+      '}\n' +
+      'export default function MDXContent(props = {}) {\n' +
+      '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+      '  return MDXLayout ? <MDXLayout {...props}><_createMdxContent {...props} /></MDXLayout> : _createMdxContent(props);\n' +
+      '}\n'
+  )
+})

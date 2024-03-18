@@ -7,15 +7,9 @@ function _createMdxContent(props) {
     ...props.components
   }
   return (
-    <>
-      {
-        <_components.pre copy>
-          <_components.code className="language-js">
-            {"console.log('Hello World!')\n"}
-          </_components.code>
-        </_components.pre>
-      }
-    </>
+    <_components.pre copy>
+      <_components.code className="language-js">{"console.log('Hello World!')\n"}</_components.code>
+    </_components.pre>
   )
 }
 export default function MDXContent(props = {}) {

@@ -8,11 +8,9 @@ function _createMdxContent(props) {
   }
   return (
     <_components.pre>
-      {
-        <_components.code className="language-js" copy>
-          {"console.log('Hello World!')\n"}
-        </_components.code>
-      }
+      <_components.code className="language-js" copy>
+        {"console.log('Hello World!')\n"}
+      </_components.code>
     </_components.pre>
   )
 }

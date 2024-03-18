@@ -1,14 +1,13 @@
-import { Parser } from 'acorn'
-import jsx from 'acorn-jsx'
-import {
-  type ExpressionStatement,
-  type JSXAttribute,
-  type JSXElement,
-  type JSXSpreadAttribute,
-  type Program
-} from 'estree-jsx'
+import { stringify as commas } from 'comma-separated-tokens'
+import { valueToEstree } from 'estree-util-value-to-estree'
 import { type Root } from 'hast'
-import { toEstree } from 'hast-util-to-estree'
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { mdxFromMarkdown } from 'mdast-util-mdx'
+import { type MdxJsxFlowElementHast } from 'mdast-util-mdx-jsx'
+import { mdxjs } from 'micromark-extension-mdxjs'
+import { find, hastToReact, html } from 'property-information'
+import { stringify as spaces } from 'space-separated-tokens'
+import styleToObject from 'style-to-js'
 import { type Plugin } from 'unified'
 import { visitParents } from 'unist-util-visit-parents'
 
@@ -22,39 +21,6 @@ declare module 'hast' {
      */
     meta?: string
   }
-}
-
-type JSXAttributes = (JSXAttribute | JSXSpreadAttribute)[]
-
-const parser = Parser.extend(jsx())
-
-/**
- * Get the JSX attributes for an estree program containing just a single JSX element.
- *
- * @param program
- *   The estree program
- * @returns
- *   The JSX attributes of the JSX element.
- */
-function getOpeningAttributes(program: Program): JSXAttributes {
-  const { expression } = program.body[0] as ExpressionStatement
-  const { openingElement } = expression as JSXElement
-  return openingElement.attributes
-}
-
-/**
- * Convert code meta to JSX elements.
- *
- * @param meta
- *   The meta to conert
- * @returns
- *   A list of MDX JSX attributes.
- */
-function parseMeta(meta: string): JSXAttributes {
-  const program = parser.parse(`<c ${meta} />`, {
-    ecmaVersion: 'latest'
-  }) as Program
-  return getOpeningAttributes(program)
 }
 
 export interface RehypeMdxCodePropsOptions {
@@ -111,14 +77,64 @@ const rehypeMdxCodeProps: Plugin<[RehypeMdxCodePropsOptions?], Root> = ({
         parent = ancestors.at(-2)!
       }
 
-      const estree = toEstree(child)
-      getOpeningAttributes(estree).push(...parseMeta(meta))
+      const replacement = fromMarkdown(`<${child.tagName} ${meta} />`, {
+        extensions: [mdxjs()],
+        mdastExtensions: [mdxFromMarkdown()]
+      }).children[0] as MdxJsxFlowElementHast
+      replacement.children = child.children
+      replacement.data = child.data
+      replacement.position = child.position
 
-      parent.children[parent.children.indexOf(child)] = {
-        type: 'mdxFlowExpression',
-        value: '',
-        data: { estree }
+      // Processing attributes is strongly based on
+      // https://github.com/syntax-tree/hast-util-to-estree/blob/3.1.0/lib/handlers/element.js
+      for (let [name, value] of Object.entries(child.properties)) {
+        const info = find(html, name)
+
+        if (value == null || value === false || Number.isNaN(value) || (!value && info.boolean)) {
+          continue
+        }
+
+        name = hastToReact[info.property] || info.property
+
+        if (Array.isArray(value)) {
+          value = info.commaSeparated ? commas(value) : spaces(value)
+        } else if (typeof value === 'number') {
+          value = String(value)
+        }
+
+        if (value === true) {
+          replacement.attributes.unshift({
+            type: 'mdxJsxAttribute',
+            name,
+            value: null
+          })
+        } else if (name === 'style') {
+          replacement.attributes.unshift({
+            type: 'mdxJsxAttribute',
+            name,
+            value: {
+              type: 'mdxJsxAttributeValueExpression',
+              value,
+              data: {
+                estree: {
+                  type: 'Program',
+                  sourceType: 'module',
+                  body: [
+                    {
+                      type: 'ExpressionStatement',
+                      expression: valueToEstree(styleToObject.default(value))
+                    }
+                  ]
+                }
+              }
+            }
+          })
+        } else {
+          replacement.attributes.unshift({ type: 'mdxJsxAttribute', name, value })
+        }
       }
+
+      parent.children[parent.children.indexOf(child)] = replacement
     })
   }
 }

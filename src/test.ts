@@ -1,40 +1,31 @@
 import assert from 'node:assert/strict'
-import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { test } from 'node:test'
-import { fileURLToPath } from 'node:url'
 
 import { compile } from '@mdx-js/mdx'
 import { type Root } from 'hast'
-import prettier from 'prettier'
 import rehypeMdxCodeProps from 'rehype-mdx-code-props'
-import { read } from 'to-vfile'
+import { testFixturesDirectory } from 'snapshot-fixtures'
 import { visitParents } from 'unist-util-visit-parents'
 
-const fixturesDir = new URL('../fixtures/', import.meta.url)
+testFixturesDirectory({
+  directory: new URL('../fixtures', import.meta.url),
+  prettier: true,
+  tests: {
+    'expected-code.jsx'(file) {
+      return compile(file, {
+        jsx: true,
+        rehypePlugins: [[rehypeMdxCodeProps, { tagName: 'code' }]]
+      })
+    },
 
-for (const name of await readdir(fixturesDir)) {
-  const testFixture = async (tagName: 'code' | 'pre'): Promise<void> => {
-    const path = new URL(`${name}/`, fixturesDir)
-    const input = await read(new URL('input.md', path))
-    const expected = new URL(`expected-${tagName}.jsx`, path)
-    const filepath = fileURLToPath(expected)
-    const prettierConfig = await prettier.resolveConfig(filepath, { editorconfig: true })
-
-    const result = await compile(input, {
-      jsx: true,
-      rehypePlugins: [[rehypeMdxCodeProps, { tagName }]]
-    })
-    const formatted = await prettier.format(String(result), { ...prettierConfig, filepath })
-    if (process.argv.includes('update')) {
-      await writeFile(expected, formatted)
+    'expected-pre.jsx'(file) {
+      return compile(file, {
+        jsx: true,
+        rehypePlugins: [rehypeMdxCodeProps]
+      })
     }
-    assert.equal(String(formatted), await readFile(expected, 'utf8'))
   }
-
-  test(`${name} code`, () => testFixture('code'))
-
-  test(`${name} pre`, () => testFixture('pre'))
-}
+})
 
 test('invalid tagName', () => {
   assert.throws(

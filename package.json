@@ -52,7 +52,7 @@
     "prettier": "^3.0.0",
     "remark-cli": "11.0.0",
     "remark-preset-remcohaszing": "^2.0.0",
-    "to-vfile": "^8.0.0",
+    "snapshot-fixtures": "^1.0.0",
     "typescript": "^5.0.0"
   }
 }

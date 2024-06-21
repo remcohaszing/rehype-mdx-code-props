@@ -14,7 +14,6 @@ markdown code meta as props.
 - [Usage](#usage)
 - [API](#api)
   - [`rehypeMdxCodeProps`](#rehypemdxcodeprops)
-    - [Options](#options)
 - [Compatibility](#compatibility)
 - [License](#license)
 

@@ -7,18 +7,6 @@ import { mdxjs } from 'micromark-extension-mdxjs'
 import { type Plugin } from 'unified'
 import { visitParents } from 'unist-util-visit-parents'
 
-/**
- * @internal
- */
-declare module 'hast' {
-  interface ElementData {
-    /**
-     * Code meta defined by the mdast.
-     */
-    meta?: string
-  }
-}
-
 export interface RehypeMdxCodePropsOptions {
   /**
    * The casing to use for attribute names.

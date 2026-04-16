@@ -3,5 +3,4 @@ dist/
 node_modules/
 *.log
 *.tgz
-*.js
-*.d.ts
+*.tsbuildinfo

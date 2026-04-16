@@ -3,11 +3,12 @@
     "declaration": true,
     "declarationMap": true,
     "module": "node16",
+    "lib": ["esnext"],
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
-    "strict": true,
-    "stripInternal": true,
-    "target": "es2018"
+    "skipLibCheck": true,
+    "target": "esnext",
+    "types": ["node"]
   }
 }

@@ -1,5 +1,0 @@
-root: true
-extends:
-  - remcohaszing
-rules:
-  no-param-reassign: off

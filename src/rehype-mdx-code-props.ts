@@ -1,10 +1,11 @@
-import { type Root } from 'hast'
+import type { Root } from 'hast'
+import type { MdxJsxFlowElementHast } from 'mdast-util-mdx-jsx'
+import type { Plugin } from 'unified'
+
 import { propertiesToMdxJsxAttributes } from 'hast-util-properties-to-mdx-jsx-attributes'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { mdxFromMarkdown } from 'mdast-util-mdx'
-import { type MdxJsxFlowElementHast } from 'mdast-util-mdx-jsx'
 import { mdxjs } from 'micromark-extension-mdxjs'
-import { type Plugin } from 'unified'
 import { visitParents } from 'unist-util-visit-parents'
 
 export interface RehypeMdxCodePropsOptions {
